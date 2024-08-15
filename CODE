@@ -1,1 +1,86 @@
+# load in packages
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+library(baseballr)
+library(sjPlot)
 
+# load in data (as of August 12, 2024), all statcast
+statcast_error <- read.csv("C:/Users/Drew Duffy/Downloads/savant_data (16).csv")
+
+# using case_when to find strings of error types and creating a new column for those
+extract_keyword <- function(des) {
+  case_when(
+   str_detect(des, "throwing") ~ "throw",
+    str_detect(des, "missed catch") ~ "catch",
+    str_detect(des, "fielding") ~ "fielding",
+    TRUE ~ "other"
+  )
+}
+
+# e_type is error type
+data <- statcast_error %>%
+ mutate(e_type = extract_keyword(des))
+
+# using a similar method to find string of what player committed the error
+position <- function(des) {
+  case_when(
+    str_detect(des, "by pitcher") ~ "e_pitcher",
+    str_detect(des, "by catcher") ~ "e_catcher",
+    str_detect(des, "by [Ff]irst baseman") ~ "e_1b",
+    str_detect(des, "by [Ss]econd baseman") ~ "e_2b",
+    str_detect(des, "by [Tt]hird baseman") ~ "e_3b",
+    str_detect(des, "by [Ss]hortstop") ~ "e_ss",
+    str_detect(des, "by [Ll]eft fielder") ~ "e_lf",
+    str_detect(des, "by [Cc]enter fielder") ~ "e_cf",
+    str_detect(des, "by [Rr]ight fielder") ~ "e_rf",
+    TRUE ~ "other"
+  )
+}
+
+# creating a new column to decipher which position is responsible
+data_with_pos <- data %>%
+  mutate(e_pos = position(des))
+
+# matching the position with the ID number of the fielder on that particular play  
+data_with_callback <- data_with_pos %>%
+  mutate(e_player_id = case_when(
+    e_pos == "e_pitcher" ~ pitcher.1,
+    e_pos == "e_catcher" ~ fielder_2.1,
+    e_pos == "e_1b" ~ fielder_3, 
+    e_pos == "e_2b" ~ fielder_4, 
+    e_pos == "e_3b" ~ fielder_5,
+    e_pos == "e_ss" ~ fielder_6,
+    e_pos == "e_lf" ~ fielder_7,
+    e_pos == "e_cf" ~ fielder_8, 
+    e_pos == "e_rf" ~ fielder_9,
+    TRUE ~ 0
+  ))
+
+# selecting relevant columns, renaming e_player_id to key_mlbam for a merge later
+playerid_with_error <- data_with_callback %>%
+  select(e_player_id, delta_run_exp, delta_home_win_exp, 
+         estimated_woba_using_speedangle, e_pos,game_year, e_type) %>%
+  rename(key_mlbam = e_player_id) %>%
+  mutate(wpa = -(abs(delta_home_win_exp)))
+  
+# creating a vector for the player registry
+player_name <- chadwick_player_lu()
+
+# selecting relevant columns in this data
+player_name1 <- player_name %>%
+  select(key_mlbam, name_last, name_first, birth_year)
+
+# joining the data on the key_mlbam and including player names 
+list_with_names <- right_join(playerid_with_error, player_name1, "key_mlbam") %>%
+  na.omit()
+
+# more clean version of the error data
+error_data <- list_with_names %>%
+  select(name_last, name_first, e_pos, 
+         estimated_woba_using_speedangle, wpa, game_year, birth_year,
+         key_mlbam, e_type, delta_run_exp) %>%
+  mutate(e_type = as.factor(e_type), e_pos = as.factor(e_pos), 
+         birth_year = as.factor(birth_year), game_year = as.factor(game_year),
+         key_mlbam = as.factor(key_mlbam), 
+         name_last = as.factor(name_last), name_first = as.factor(name_first))
