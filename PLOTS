@@ -21,3 +21,10 @@ ggplot(sum_error_data) +
   geom_point(aes(x = age, y = wpa)) +
   facet_wrap(~ e_pos)+
   theme_minimal()
+
+# lrm for age and wpa 
+age_model <- lm(wpa ~ age * e_pos,
+              data = sum_error_data)
+summary(age_model)
+plot_model(age_model, type = "int", 
+           mdrt.values = "meansd")
