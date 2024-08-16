@@ -8,7 +8,7 @@ ggplot(error_data, aes(x = game_year, y = estimated_woba_using_speedangle)) +
    facet_wrap( ~ e_pos) +
    theme_minimal()
 
-# positions broken down by type of error
+# positions broken down by type of error and position
 error_data <- error_data %>% 
   filter(e_type != "other")
 ggplot(error_data, aes(x = e_type, y = wpa)) +
