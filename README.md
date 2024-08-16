@@ -6,3 +6,5 @@ This data looks at errors in the Stacast Era (2015-present) with games up to Aug
 The premise of the argument is that some plays deemed errors (though arbitrary by themselves) are more costly than others. 
 
 Ex. An error in the bottom of the ninth inning in a tie game is not the same as an error in a 8 run game in the ninth inning. While not indicative of player performance as a whole, it is a starting point to see which players seem to make errors at more pivotal times. 
+
+(Still new to Git and trying to iron out the kinks! Thanks for the patience. Read more on my website: https://sites.google.com/view/duffysdigest/home )
