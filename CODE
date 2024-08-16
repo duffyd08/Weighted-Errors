@@ -84,3 +84,8 @@ error_data <- list_with_names %>%
          birth_year = as.factor(birth_year), game_year = as.factor(game_year),
          key_mlbam = as.factor(key_mlbam), 
          name_last = as.factor(name_last), name_first = as.factor(name_first))
+
+# model for age and wpa if any relation
+age_model <- lm(wpa ~ age * e_pos,
+              data = sum_error_data)
+summary(age_model)
