@@ -1,0 +1,23 @@
+# (This is a list of code for plots that I used to visualize some of the trends in the data. Separated here for clarity and ease of view) #
+
+
+# shows variation on positions over years on how the quality of contact
+# outfield is interesting 
+ggplot(error_data, aes(x = game_year, y = estimated_woba_using_speedangle)) +
+   geom_boxplot() +
+   facet_wrap( ~ e_pos) +
+   theme_minimal()
+
+# positions broken down by type of error
+error_data <- error_data %>% 
+  filter(e_type != "other")
+ggplot(error_data, aes(x = e_type, y = wpa)) +
+  geom_boxplot() +
+  facet_wrap( ~ e_pos) +
+  theme_minimal()
+
+# distribution of errors by age over time and the wpa on each
+ggplot(sum_error_data) +
+  geom_point(aes(x = age, y = wpa)) +
+  facet_wrap(~ e_pos)+
+  theme_minimal()
