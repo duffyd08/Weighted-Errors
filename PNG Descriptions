@@ -1,0 +1,16 @@
+# This is a description document for the png files that are attached. 
+
+age_wpa_pos.png 
+- this plot shows the wpa distribution of errors based on ages and split by positions
+
+etype_wpa_pos.ong
+- this boxplot breaks the errors into different types and shows which type of errors certain positions experience
+
+pred_age_wpa.png
+- this plot came from a logistic regression model where I was looking to see if there was any link between age and the amount of win probability added on each 
+error. This plot shows that there is nothing substantial for certain positions and ages. 
+
+woba_error_years.png
+- an idea I had was to look at the xWOBA on plays that were determined errors to see if there was a treshold where certain plays are seen as too difficult
+to be deemed an error. There are more variables to that idea. This plot shows the distribution of xWOBA on the position level and split by year. This shows
+different trends year to year where certain positions are seeing more errors. 
